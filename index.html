@@ -65,28 +65,51 @@
             z-index: 15;
         }
 
-        /* --- BARRIGA --- */
+        /* --- BARRIGA (AJUSTE DE CENTRALIZAÇÃO) --- */
         #belly-container {
-            position: absolute; top: 62%; left: 30%; width: 40%; height: 25%;
-            display: flex; justify-content: center; align-items: center; z-index: 12;
+            position: absolute; 
+            top: 71.5%; /* Centralizado exatamente sobre o círculo branco do SVG */
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            width: 120px; 
+            height: 120px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 12;
             pointer-events: none;
         }
 
         #belly-counter {
             font-size: clamp(2.5rem, 6vh, 4.5rem);
-            font-weight: bold; color: #fff; text-shadow: 3px 3px 0 #000;
-            z-index: 14; position: absolute;
+            font-weight: bold; 
+            color: #fff; 
+            text-shadow: 3px 3px 0 #000;
+            z-index: 14; 
+            position: absolute;
+            line-height: 1;
         }
 
         #eaten-fruits-visuals {
-            position: absolute; width: 100%; height: 100%;
-            display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
-            opacity: 0.6; z-index: 13;
+            position: absolute; 
+            width: 80%; 
+            height: 80%;
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            align-items: center;
+            opacity: 0.6; 
+            z-index: 13;
         }
 
         .eaten-fruit {
-            width: 25% !important; height: 25% !important; margin: 2px;
-            position: relative !important; transform: none !important; left: auto !important; top: auto !important;
+            width: 30% !important; 
+            height: 30% !important; 
+            margin: 1px;
+            position: relative !important; 
+            transform: none !important; 
+            left: auto !important; 
+            top: auto !important;
         }
 
         /* --- ESTADOS --- */
@@ -139,7 +162,7 @@
             pointer-events: none; filter: drop-shadow(15px 15px 20px rgba(0,0,0,0.3));
         }
 
-        /* --- LIQUIDIFICADOR --- */
+        /* --- LIQUIDIFICADOR NO JOGO --- */
         #blender-wrapper {
             position: absolute; 
             top: 140px; 
@@ -147,6 +170,7 @@
             width: 110px; height: 160px; 
             z-index: 60;
             display: none; touch-action: none; 
+            transform-origin: center center; 
         }
         
         #blender-container {
@@ -154,7 +178,6 @@
             position: relative;
         }
 
-        /* Container para mostrar as frutas dentro antes de bater */
         #blender-items-visuals {
             position: absolute;
             top: 50px; left: 30px; width: 50px; height: 80px;
@@ -176,17 +199,6 @@
             z-index: 10;
         }
 
-        /* AJUSTE DA ANIMAÇÃO DE BEBER */
-        .blender-drinking-anim {
-            transition: transform 1s ease-in-out !important;
-            /* Move o liquidificador da direita para o centro (-50vw aprox) 
-               E desce (translateY) para encontrar a boca.
-               Rotação ajustada para -100deg para virar o copo.
-            */
-            transform: translate(calc(-50vw + 60px), 10vh) rotate(-100deg) !important; 
-            z-index: 200 !important;
-        }
-
         /* --- EFEITOS --- */
         .poop-drop {
             position: absolute; font-size: 85px; z-index: 5;
@@ -198,6 +210,14 @@
             0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; } 
             15% { opacity: 1; transform: translate(-50%, 60px) scale(1.1); } 
             100% { transform: translate(-50%, 100vh) scale(1); opacity: 1; } 
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-5deg); }
+            100% { transform: rotate(0deg); }
         }
 
         /* --- UI --- */
@@ -213,14 +233,33 @@
         .highlight-num { color: #e74c3c; font-weight: bold; font-size: 1.7rem; }
 
         #controls-sidebar {
-            position: absolute; left: 15px; top: calc(15px + env(safe-area-inset-top));
-            display: flex; flex-direction: column;
-            gap: 12px; z-index: 60;
+            position: absolute; 
+            left: 15px; 
+            top: calc(110px + env(safe-area-inset-top));
+            display: flex; 
+            flex-direction: column;
+            gap: 20px; 
+            z-index: 60;
         }
+
+        /* BOTÃO CONTROL-BTN MELHORADO */
         .control-btn {
-            width: 55px; height: 55px; background: white; border-radius: 50%;
-            border: 3px solid #3498db; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 4px 0 #2980b9; transition: transform 0.1s;
+            width: 65px; 
+            height: 65px; 
+            background: white; 
+            border-radius: 18px;
+            border: 4px solid #3498db; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            box-shadow: 0 6px 0 #2980b9; 
+            transition: all 0.1s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .control-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #2980b9;
         }
 
         #poop-btn {
@@ -271,10 +310,21 @@
 
     <div id="controls-sidebar">
         <div id="btn-blender" class="control-btn" onclick="toggleBlenderMode()">
-            <svg viewBox="0 0 24 24"><path d="M19,19H5V8H19M19,8V6A2,2 0 0,0 17,4H7A2,2 0 0,0 5,6V8M19,19A2,2 0 0,1 17,21H7A2,2 0 0,1 5,19M9,13H15" fill="#333"/></svg>
+            <svg viewBox="0 0 100 100" width="50" height="50">
+                <rect x="25" y="70" width="50" height="20" rx="5" fill="#e74c3c" />
+                <circle cx="50" cy="80" r="5" fill="white" />
+                <path d="M30 20 L70 20 L65 70 L35 70 Z" fill="#81ecec" stroke="#00cec9" stroke-width="3"/>
+                <rect x="28" y="15" width="44" height="8" rx="2" fill="#2d3436" />
+                <path d="M70 30 Q80 30 80 45 Q80 60 65 60" fill="none" stroke="#00cec9" stroke-width="4" stroke-linecap="round"/>
+            </svg>
         </div>
         <div id="btn-color" class="control-btn" onclick="toggleColor()">
-            <svg viewBox="0 0 24 24"><path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" fill="#333" /></svg>
+            <svg viewBox="0 0 100 100" width="50" height="50">
+                <circle cx="50" cy="50" r="35" fill="#fdcb6e" />
+                <circle cx="40" cy="40" r="10" fill="#ff7675" />
+                <circle cx="65" cy="55" r="12" fill="#55efc4" />
+                <circle cx="45" cy="65" r="8" fill="#74b9ff" />
+            </svg>
         </div>
     </div>
 
@@ -289,14 +339,10 @@
 
         <div id="monster-container" class="monster-idle">
             <div id="mouth-sensor"></div>
-            <div id="belly-container">
-                <div id="eaten-fruits-visuals"></div>
-                <div id="belly-counter"></div>
-            </div>
             
             <svg id="monster-svg" viewBox="0 0 300 350" preserveAspectRatio="xMidYMid meet">
                 <path id="monster-body" d="M50 300 Q20 350 80 340 L220 340 Q280 350 250 300 Q280 200 250 100 Q230 20 150 20 Q70 20 50 100 Q20 200 50 300" fill="#7bed9f" stroke="#2ecc71" stroke-width="5"/>
-                <circle cx="150" cy="250" r="60" fill="rgba(255,255,255,0.4)" stroke="#fff" stroke-width="3" />
+                <circle id="belly-bg" cx="150" cy="250" r="60" fill="rgba(255,255,255,0.4)" stroke="#fff" stroke-width="3" />
                 <g id="eyes">
                     <g class="blink-anim"><circle cx="100" cy="100" r="25" fill="white" stroke="#333" stroke-width="2"/><circle class="eye-pupil" id="eye-left" cx="100" cy="100" r="10" fill="black" /></g>
                     <g class="blink-anim" style="animation-delay: 0.15s;"><circle cx="200" cy="100" r="25" fill="white" stroke="#333" stroke-width="2"/><circle class="eye-pupil" id="eye-right" cx="200" cy="100" r="10" fill="black" /></g>
@@ -308,13 +354,16 @@
                 <path id="monster-arms-left" class="arm-left" d="M60 200 Q20 220 30 180" stroke="#2ecc71" stroke-width="15" stroke-linecap="round" fill="none"/>
                 <path id="monster-arms-right" class="arm-right" d="M240 200 Q280 220 270 180" stroke="#2ecc71" stroke-width="15" stroke-linecap="round" fill="none"/>
             </svg>
+
+            <div id="belly-container">
+                <div id="eaten-fruits-visuals"></div>
+                <div id="belly-counter"></div>
+            </div>
         </div>
 
         <div id="blender-wrapper">
             <div id="blender-container">
-                <!-- Visual das frutas caindo dentro -->
                 <div id="blender-items-visuals"></div>
-                
                 <div id="blender-sensor"></div> 
                 <svg viewBox="0 0 140 200" style="position:relative; z-index: 1;">
                     <path d="M20 40 L30 160 Q35 180 70 180 Q105 180 110 160 L120 40 Z" fill="rgba(200, 230, 255, 0.7)" stroke="#3498db" stroke-width="3"/>
@@ -432,7 +481,7 @@
                 els.monster.classList.add('sick-face');
                 els.monster.classList.remove('monster-idle'); 
                 els.instruction.innerHTML = "Ai minha barriga!";
-                speak("Ai ai ai, minha barriga! Preciso fazer cocô!");
+                speak("Ai ai ai, minha barriga! me ajude aliviar");
                 els.poopBtn.style.display = 'flex';
                 els.shelf.style.opacity = '0.3';
                 els.shelf.style.pointerEvents = 'none';
@@ -471,7 +520,7 @@
             state.mode = (state.mode === 'normal') ? 'blender' : 'normal';
             if (state.mode === 'blender') {
                 els.blenderWrapper.style.display = 'block';
-                els.btnBlender.style.background = '#ffeaa7';
+                els.btnBlender.style.background = '#e1f5fe';
             } else {
                 els.blenderWrapper.style.display = 'none';
                 els.btnBlender.style.background = 'white';
@@ -598,11 +647,10 @@
             state.targetCount--; state.eatenCount++;
             els.bellyCounter.innerText = state.eatenCount;
             
-            // FALA O NÚMERO
             speak(state.eatenCount.toString());
             
             if (state.targetCount <= 0) {
-                setTimeout(() => speak("Delícia!"), 1000); // Fala delícia depois do número
+                setTimeout(() => speak("Delícia!"), 1000); 
                 state.poopMeter++; state.isPlaying = false; setTimeout(startRound, 2500);
             }
         }
@@ -632,7 +680,6 @@
                 
                 el.remove(); playSound('pop');
                 
-                // Lógica para narrar o que falta
                 const remaining = [];
                 for (let [t, q] of Object.entries(state.blenderRecipe)) {
                     if (q > 0) remaining.push(`${q} ${t}`);
@@ -703,13 +750,29 @@
         function feedMonsterJuice() {
             state.blenderReady = false;
             els.blenderContainer.classList.remove('blender-ready');
-            els.blenderContainer.classList.add('blender-drinking-anim');
+            
+            const mRect = els.mouthSensor.getBoundingClientRect();
+            const bRect = els.blenderWrapper.getBoundingClientRect();
+            
+            const mCenterX = mRect.left + mRect.width / 2;
+            const mCenterY = mRect.top + mRect.height / 2;
+            const bCenterX = bRect.left + bRect.width / 2;
+            const bCenterY = bRect.top + bRect.height / 2;
+            
+            const offsetX = -20; 
+            const offsetY = -40; 
+            
+            const moveX = (mCenterX - bCenterX) + offsetX;
+            const moveY = (mCenterY - bCenterY) + offsetY;
+
+            els.blenderWrapper.style.transition = 'transform 1s ease-in-out';
+            els.blenderWrapper.style.transform = `translate(${moveX}px, ${moveY}px) rotate(-100deg)`;
             
             setTimeout(() => {
                 els.blenderLiquid.style.opacity = 0;
                 playSound('eat'); speak("Hummm delícia!");
                 setTimeout(() => {
-                    els.blenderContainer.classList.remove('blender-drinking-anim');
+                    els.blenderWrapper.style.transition = 'transform 0.5s ease';
                     els.blenderWrapper.style.transform = 'none';
                     state.poopMeter += 2; startRound();
                 }, 1000);
