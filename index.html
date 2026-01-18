@@ -29,21 +29,16 @@
             box-sizing: border-box;
         }
 
-        /* --- O MONSTRO (POSICIONAMENTO E CORREÇÃO DE ANIMAÇÃO) --- */
+        /* --- O MONSTRO --- */
         #monster-container {
             position: absolute;
-            /* Fixamos o centro do monstro em 35% da altura para sobrar MUITO espaço embaixo */
-            top: 35%; 
+            top: 32%; 
             left: 50%;
-            /* O segredo: a transformação inicial deve ser mantida ou incluída na animação */
             transform: translate(-50%, -50%);
-            
-            /* Tamanho adaptável para S25 e Tablet */
-            height: 45vh; 
+            height: 42vh; 
             width: auto;
-            max-height: 450px;
-            min-height: 280px;
-            
+            max-height: 400px;
+            min-height: 250px;
             z-index: 10;
             transition: left 0.5s ease, top 0.5s ease;
             pointer-events: none;
@@ -55,7 +50,6 @@
             display: block;
         }
         
-        /* Corrigido: Agora a animação de respiração NÃO tira o monstro do centro */
         .monster-idle { 
             animation: breathe 3s infinite ease-in-out; 
         }
@@ -67,7 +61,7 @@
 
         #mouth-sensor {
             position: absolute;
-            top: 38%; left: 25%; width: 50%; height: 28%; 
+            top: 35%; left: 20%; width: 60%; height: 35%; 
             z-index: 15;
         }
 
@@ -107,10 +101,10 @@
         /* --- PRATELEIRA --- */
         #fruit-shelf {
             position: absolute;
-            bottom: calc(8% + env(safe-area-inset-bottom));
+            bottom: calc(18% + env(safe-area-inset-bottom)); 
             left: 50%;
             transform: translateX(-50%);
-            width: 92%;
+            width: 94%;
             max-width: 600px;
             height: 90px;
             background: #deb887;
@@ -147,14 +141,27 @@
 
         /* --- LIQUIDIFICADOR --- */
         #blender-wrapper {
-            position: absolute; top: 120px; right: 20px;
-            width: 110px; height: 160px; z-index: 60;
+            position: absolute; 
+            top: 140px; 
+            right: 15px;
+            width: 110px; height: 160px; 
+            z-index: 60;
             display: none; touch-action: none; 
         }
         
         #blender-container {
             width: 100%; height: 100%; transform-origin: center bottom;
+            position: relative;
         }
+
+        /* Container para mostrar as frutas dentro antes de bater */
+        #blender-items-visuals {
+            position: absolute;
+            top: 50px; left: 30px; width: 50px; height: 80px;
+            display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-end;
+            z-index: 2; pointer-events: none;
+        }
+        .blender-fruit-tiny { width: 25px; height: 25px; margin: 1px; }
 
         .blender-ready {
             cursor: grab;
@@ -162,9 +169,21 @@
             filter: drop-shadow(0 0 15px gold);
         }
         
+        #blender-sensor {
+            position: absolute;
+            top: -20px; left: -20px;
+            width: 140%; height: 140%;
+            z-index: 10;
+        }
+
+        /* AJUSTE DA ANIMAÇÃO DE BEBER */
         .blender-drinking-anim {
-            transition: transform 0.8s ease-in-out !important;
-            transform: translate(calc(-50vw + 50px), 15vh) rotate(-85deg) !important; 
+            transition: transform 1s ease-in-out !important;
+            /* Move o liquidificador da direita para o centro (-50vw aprox) 
+               E desce (translateY) para encontrar a boca.
+               Rotação ajustada para -100deg para virar o copo.
+            */
+            transform: translate(calc(-50vw + 60px), 10vh) rotate(-100deg) !important; 
             z-index: 200 !important;
         }
 
@@ -177,35 +196,35 @@
 
         @keyframes dropPoop { 
             0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; } 
-            15% { opacity: 1; transform: translate(-50%, 50px) scale(1.1); } 
+            15% { opacity: 1; transform: translate(-50%, 60px) scale(1.1); } 
             100% { transform: translate(-50%, 100vh) scale(1); opacity: 1; } 
         }
 
         /* --- UI --- */
         #ui-layer { 
-            position: absolute; top: calc(15px + env(safe-area-inset-top));
+            position: absolute; top: calc(10px + env(safe-area-inset-top));
             width: 100%; text-align: center; z-index: 20; pointer-events: none; 
         }
         #instruction-bubble {
-            background: white; padding: 12px 30px; border-radius: 50px; display: inline-block;
-            border: 4px solid #333; font-size: 1.6rem; box-shadow: 0 6px 0 rgba(0,0,0,0.15); 
-            max-width: 85%;
+            background: white; padding: 10px 25px; border-radius: 50px; display: inline-block;
+            border: 4px solid #333; font-size: 1.4rem; box-shadow: 0 6px 0 rgba(0,0,0,0.15); 
+            max-width: 80%;
         }
-        .highlight-num { color: #e74c3c; font-weight: bold; font-size: 1.9rem; }
+        .highlight-num { color: #e74c3c; font-weight: bold; font-size: 1.7rem; }
 
         #controls-sidebar {
-            position: absolute; left: 20px; top: calc(20px + env(safe-area-inset-top));
-            display: flex; gap: 15px; z-index: 60;
+            position: absolute; left: 15px; top: calc(15px + env(safe-area-inset-top));
+            display: flex; flex-direction: column;
+            gap: 12px; z-index: 60;
         }
         .control-btn {
-            width: 60px; height: 60px; background: white; border-radius: 50%;
+            width: 55px; height: 55px; background: white; border-radius: 50%;
             border: 3px solid #3498db; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 4px 0 #2980b9; transition: transform 0.1s;
         }
-        .control-btn svg { width: 35px; height: 35px; }
 
         #poop-btn {
-            position: absolute; top: 50%; right: 25px; transform: translateY(-50%);
+            position: absolute; top: 50%; right: 20px; transform: translateY(-50%);
             width: 100px; height: 100px; background: #fff; border-radius: 50%;
             border: 6px solid #e74c3c; display: none; justify-content: center; align-items: center;
             z-index: 70; animation: pulse-btn 1.2s infinite; cursor: pointer;
@@ -214,10 +233,9 @@
 
         @keyframes pulse-btn { 
             0%, 100% { transform: translateY(-50%) scale(1); } 
-            50% { transform: translateY(-50%) scale(1.15); } 
+            50% { transform: translateY(-50%) scale(1.1); } 
         }
 
-        /* TELA INICIAL */
         #start-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: #2ecc71; display: flex; flex-direction: column;
@@ -229,29 +247,26 @@
             box-shadow: 0 12px 0 #27ae60; font-weight: bold;
         }
 
-        /* ANIMAÇÕES SVG */
         @keyframes blink { 0%, 100% { transform: scaleY(1); } 5% { transform: scaleY(0.1); } 10% { transform: scaleY(1); } }
         .blink-anim { animation: blink 4s infinite; transform-origin: center; }
         .arm-left { animation: floatArm 2s infinite ease-in-out alternate; transform-origin: 60px 200px; }
         .arm-right { animation: floatArm 2.5s infinite ease-in-out alternate-reverse; transform-origin: 240px 200px; }
         @keyframes floatArm { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
 
-        /* AJUSTES CELULARES (S25) */
         @media (max-width: 600px) {
-            #monster-container { height: 40vh; top: 32%; }
-            #fruit-shelf { bottom: calc(6% + env(safe-area-inset-bottom)); height: 80px; }
+            #monster-container { height: 38vh; top: 30%; }
+            #fruit-shelf { bottom: calc(18% + env(safe-area-inset-bottom)); height: 80px; }
             .basket-item { width: 68px; height: 68px; margin-bottom: 25px; }
-            #instruction-bubble { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
 
     <div id="start-screen">
-        <h1 style="color:white; font-size: 3.5rem; text-shadow: 4px 4px 0 #000; text-align:center;">O Monstro Comilão</h1>
-        <div style="font-size: 8rem; margin: 30px;">🦖🍎</div>
+        <h1 style="color:white; font-size: 3rem; text-shadow: 4px 4px 0 #000; text-align:center;">O Monstro Comilão</h1>
+        <div style="font-size: 6rem; margin: 20px;">🦖🍎</div>
         <button class="big-btn" onclick="startGame()">JOGAR</button>
-        <p style="color:white; margin-top:40px; font-weight:bold; font-size: 1.4rem;">Para a Lavine ❤️</p>
+        <p style="color:white; margin-top:40px; font-weight:bold; font-size: 1.3rem;">Para a Lavine ❤️</p>
     </div>
 
     <div id="controls-sidebar">
@@ -296,9 +311,12 @@
         </div>
 
         <div id="blender-wrapper">
-            <div id="blender-sensor"></div> 
             <div id="blender-container">
-                <svg viewBox="0 0 140 200">
+                <!-- Visual das frutas caindo dentro -->
+                <div id="blender-items-visuals"></div>
+                
+                <div id="blender-sensor"></div> 
+                <svg viewBox="0 0 140 200" style="position:relative; z-index: 1;">
                     <path d="M20 40 L30 160 Q35 180 70 180 Q105 180 110 160 L120 40 Z" fill="rgba(200, 230, 255, 0.7)" stroke="#3498db" stroke-width="3"/>
                     <rect x="15" y="30" width="110" height="15" rx="5" fill="#333"/>
                     <rect x="25" y="180" width="90" height="20" fill="#e74c3c"/>
@@ -349,6 +367,7 @@
             blenderContainer: document.getElementById('blender-container'),
             blenderLiquid: document.getElementById('blender-liquid'),
             blenderSensor: document.getElementById('blender-sensor'),
+            blenderItems: document.getElementById('blender-items-visuals'),
             mouthSensor: document.getElementById('mouth-sensor'),
             poopBtn: document.getElementById('poop-btn'),
             gameContainer: document.getElementById('game-container'),
@@ -466,6 +485,7 @@
             state.isPlaying = true;
             state.blenderReady = false;
             els.blenderContainer.classList.remove('blender-ready');
+            els.blenderItems.innerHTML = '';
             
             const oldFruits = els.shelf.querySelectorAll('.basket-item');
             oldFruits.forEach(el => el.remove());
@@ -577,9 +597,13 @@
             playSound('eat');
             state.targetCount--; state.eatenCount++;
             els.bellyCounter.innerText = state.eatenCount;
-            speak(state.targetCount > 0 ? state.eatenCount.toString() : "Delícia!");
+            
+            // FALA O NÚMERO
+            speak(state.eatenCount.toString());
+            
             if (state.targetCount <= 0) {
-                state.poopMeter++; state.isPlaying = false; setTimeout(startRound, 2000);
+                setTimeout(() => speak("Delícia!"), 1000); // Fala delícia depois do número
+                state.poopMeter++; state.isPlaying = false; setTimeout(startRound, 2500);
             }
         }
 
@@ -588,8 +612,7 @@
             const t1 = types[Math.floor(Math.random()*types.length)];
             let t2 = types[Math.floor(Math.random()*types.length)];
             while(t1===t2) t2 = types[Math.floor(Math.random()*types.length)];
-            const c1 = 1, c2 = 1;
-            state.blenderRecipe = { [t1]: c1, [t2]: c2 };
+            state.blenderRecipe = { [t1]: 1, [t2]: 1 };
             state.blenderContent = [];
             els.blenderLiquid.style.opacity = 0;
             els.instruction.innerHTML = `Vitamina: <span class="highlight-num">1 ${t1}</span> e <span class="highlight-num">1 ${t2}</span>`;
@@ -601,9 +624,29 @@
             const type = el.dataset.type;
             if (state.blenderRecipe[type] > 0) {
                 state.blenderRecipe[type]--;
+                
+                const tinyFruit = document.createElement('div');
+                tinyFruit.className = 'blender-fruit-tiny';
+                tinyFruit.innerHTML = `<svg viewBox="0 0 70 70">${fruitsData[type].shape}</svg>`;
+                els.blenderItems.appendChild(tinyFruit);
+                
                 el.remove(); playSound('pop');
+                
+                // Lógica para narrar o que falta
+                const remaining = [];
+                for (let [t, q] of Object.entries(state.blenderRecipe)) {
+                    if (q > 0) remaining.push(`${q} ${t}`);
+                }
+                if (remaining.length > 0) {
+                    speak("Falta " + remaining.join(" e "));
+                }
+
                 if (Object.values(state.blenderRecipe).every(v => v === 0)) finishBlender();
-            } else { speak("Essa não!"); el.remove(); }
+            } else { 
+                speak("Essa não!"); 
+                el.style.transition = '0.3s'; el.style.transform = 'scale(0)';
+                setTimeout(() => el.remove(), 300);
+            }
         }
 
         function finishBlender() {
@@ -611,6 +654,7 @@
             els.blenderContainer.style.animation = 'shake 0.5s infinite';
             setTimeout(() => {
                 els.blenderContainer.style.animation = '';
+                els.blenderItems.innerHTML = '';
                 els.blenderLiquid.style.opacity = 1; 
                 state.blenderReady = true;
                 els.blenderContainer.classList.add('blender-ready');
@@ -658,7 +702,9 @@
 
         function feedMonsterJuice() {
             state.blenderReady = false;
+            els.blenderContainer.classList.remove('blender-ready');
             els.blenderContainer.classList.add('blender-drinking-anim');
+            
             setTimeout(() => {
                 els.blenderLiquid.style.opacity = 0;
                 playSound('eat'); speak("Hummm delícia!");
@@ -667,13 +713,14 @@
                     els.blenderWrapper.style.transform = 'none';
                     state.poopMeter += 2; startRound();
                 }, 1000);
-            }, 800);
+            }, 1000);
         }
 
         function resetBlender() {
             els.blenderWrapper.style.transform = 'none';
             els.blenderContainer.className = '';
             els.blenderLiquid.style.opacity = 0;
+            els.blenderItems.innerHTML = '';
         }
     </script>
 </body>
