@@ -369,7 +369,7 @@
             blenderRecipe: {}, blenderReady: false, 
             poopMeter: 0, isPlaying: false, needsPoop: false, activeDrag: null,
             justActivatedBlender: false, lastSoundTime: 0, lastAmbientSpeechTime: 0,
-            dirtSpots: []
+            dirtSpots: [], lastCleanTime: 0
         };
 
         const MAX_POOP = 6;
@@ -458,19 +458,24 @@
             setupInteractionEvents();
             startRound();
             
-            // Inicia o ciclo de sujeira automática
-            setInterval(tryAddDirt, 8000); // Tenta adicionar sujeira a cada 8 segundos
+            // Inicia o ciclo de sujeira automática aleatória
+            scheduleNextDirt();
         }
 
         // --- SISTEMA DE SUJEIRA ---
+        function scheduleNextDirt() {
+            // Agenda próxima sujeira entre 30s e 50s
+            const delay = 30000 + Math.random() * 20000;
+            setTimeout(() => {
+                tryAddDirt();
+                scheduleNextDirt(); // Loop
+            }, delay);
+        }
+
         function tryAddDirt() {
             // Limite máximo de manchas para não cobrir tudo
             if (state.dirtSpots.length > 8) return;
 
-            // Área segura aproximada do corpo do monstro no SVG 300x350
-            // Evita a boca (topo), olhos e o centro exato da barriga
-            // X entre 60 e 240, Y entre 100 e 300
-            
             let attempts = 0;
             let success = false;
             let x, y, r;
@@ -528,7 +533,7 @@
                 state.dirtSpots.splice(index, 1);
                 
                 // Feedback visual e sonoro
-                createParticle(spotData.x, spotData.y, 'bubble'); // Usando coordenadas relativas pode precisar ajuste, mas bubble é visual
+                createParticle(spotData.x, spotData.y, 'bubble');
                 playSound('water');
             }
         }
@@ -676,29 +681,28 @@
                     const isTouching = (e.type === 'touchmove') || (e.buttons === 1);
                     if (!isTouching) return;
 
-                    // DETECÇÃO DE SUJEIRA
-                    // Verifica elemento sob o cursor/dedo
-                    const elementUnder = document.elementFromPoint(clientX, clientY);
-                    
-                    // Se o elemento for uma mancha (dirt-spot)
-                    if (elementUnder && elementUnder.classList.contains('dirt-spot')) {
-                        // Encontra o objeto correspondente no state
-                        const spotData = state.dirtSpots.find(s => s.el === elementUnder);
-                        if (spotData) {
-                            removeDirtSpot(spotData);
-                        }
-                    }
-
                     const mRect = els.monster.getBoundingClientRect();
-                    if (clientX >= mRect.left && clientX <= mRect.right && 
-                        clientY >= mRect.top && clientY <= mRect.bottom) {
-                        
+                    // Verifica se está esfregando SOBRE o monstro
+                    const isOverMonster = clientX >= mRect.left && clientX <= mRect.right && 
+                                          clientY >= mRect.top && clientY <= mRect.bottom;
+
+                    if (isOverMonster) {
+                        // Lógica de limpeza simplificada: Esfregar em qualquer lugar limpa sujeira aleatória
+                        const now = Date.now();
+                        // Remove uma mancha a cada ~800ms esfregando
+                        if (state.dirtSpots.length > 0 && now - state.lastCleanTime > 800) {
+                            const randomSpotIndex = Math.floor(Math.random() * state.dirtSpots.length);
+                            removeDirtSpot(state.dirtSpots[randomSpotIndex]);
+                            state.lastCleanTime = now;
+                        }
+
+                        // Feedback visual (bolhas) mais frequente
                         if (Math.random() > 0.8) {
                             createParticle(clientX, clientY, 'bubble');
                             playSound('water');
                         }
                         
-                        if (Math.random() > 0.95) {
+                        if (Math.random() > 0.98) {
                             speak(bathPhrases[Math.floor(Math.random() * bathPhrases.length)], true);
                         }
                     }
