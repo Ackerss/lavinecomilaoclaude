@@ -899,7 +899,7 @@
             let numAudio = state.targetCount.toString(); // Default 3 (tres)
             
             if (state.targetCount === 1) numAudio = (gender === 'm') ? '1' : 'uma'; // Use '1.mp3' para masculino (garantido)
-            if (state.targetCount === 2) numAudio = (gender === 'm') ? 'dois' : 'duas';
+            if (state.targetCount === 2) numAudio = (gender === 'm') ? '2' : 'duas'; // Use '2.mp3' para masculino
             if (state.targetCount === 3) numAudio = '3'; // USA '3.mp3' QUE É O PADRÃO ANTIGO
 
             // Define nome do arquivo de áudio (singular ou plural)
