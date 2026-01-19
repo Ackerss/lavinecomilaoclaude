@@ -402,11 +402,14 @@
             }
         }
 
-        // --- FUNÇÃO DE CORTE DE SILÊNCIO ---
+        // --- FUNÇÃO DE CORTE DE SILÊNCIO OTIMIZADA ---
         function getTrimmedDetails(buffer) {
             const data = buffer.getChannelData(0); 
             const len = data.length;
-            const threshold = 0.015; 
+            
+            // REDUZI o threshold para detectar sons mais baixos (antes era 0.015)
+            // Isso evita que audios baixos sejam considerados "silêncio"
+            const threshold = 0.002; 
 
             let start = 0;
             let end = len - 1;
@@ -414,13 +417,16 @@
             while (start < len && Math.abs(data[start]) < threshold) start++;
             while (end > start && Math.abs(data[end]) < threshold) end--;
             
-            if (end <= start) return { offset: 0, duration: buffer.duration };
+            // Se o audio cortado ficar muito curto (< 0.15s), assume que o corte falhou
+            // e retorna o audio original inteiro. Isso conserta palavras curtas como "Um" ou "Três"
+            const duration = (end - start) / buffer.sampleRate;
+            if (end <= start || duration < 0.15) {
+                return { offset: 0, duration: buffer.duration };
+            }
 
             const trimStart = start / buffer.sampleRate;
-            const trimEnd = end / buffer.sampleRate;
-            const trimDuration = trimEnd - trimStart;
-
-            return { offset: trimStart, duration: trimDuration };
+            
+            return { offset: trimStart, duration: duration };
         }
 
         // Toca lista de audios em sequencia
@@ -442,8 +448,9 @@
                     const trim = getTrimmedDetails(buffer);
                     source.start(nextStartTime, trim.offset, trim.duration);
                     
-                    // Ajuste FINO: -0.01s (quase nada de overlap, apenas colado)
-                    nextStartTime += (trim.duration - 0.01); 
+                    // Ajuste FINO: 0 (sem sobreposição, apenas colado)
+                    // Evita "engolir" o finalzinho das palavras
+                    nextStartTime += trim.duration; 
                 }
             });
         }
@@ -893,7 +900,7 @@
             
             if (state.targetCount === 1) numAudio = (gender === 'm') ? 'um' : 'uma';
             if (state.targetCount === 2) numAudio = (gender === 'm') ? 'dois' : 'duas';
-            if (state.targetCount === 3) numAudio = 'tres'; // Garanta que tem "tres.mp3"
+            if (state.targetCount === 3) numAudio = '3'; // USA '3.mp3' QUE É O PADRÃO ANTIGO
 
             // Define nome do arquivo de áudio (singular ou plural)
             const audioFruitName = getFruitName(state.targetType, state.targetCount);
